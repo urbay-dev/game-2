@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Tali Rimba: Monyet & Buaya</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐒</text></svg>">
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
     * {
@@ -231,6 +232,44 @@
     let isHost = false;
     let myRole = null;
     let fullHostId = null;
+
+    const ROPE_REST_LEN = 135;
+    const ROPE_MAX_LEN = 260;
+    const K_ROPE = 0.085;
+
+    const keys = { left: false, right: false, up: false };
+    const remoteKeys = { left: false, right: false, up: false };
+
+    const players = {
+      monkey: { x: 140, y: 380, vx: 0, vy: 0, w: 38, h: 38, facing: 1, animFrame: 0, onGround: false },
+      croc:   { x: 210, y: 390, vx: 0, vy: 0, w: 54, h: 30, facing: 1, animFrame: 0, onGround: false }
+    };
+
+    let cameraX = 0;
+    let gameState = 'waiting';
+    let tick = 0;
+
+    // Ambient floating fireflies / pollen
+    const particles = Array.from({ length: 30 }, () => ({
+      x: Math.random() * 3200,
+      y: 100 + Math.random() * 380,
+      size: 1 + Math.random() * 2.5,
+      speedX: 0.15 + Math.random() * 0.35,
+      phase: Math.random() * Math.PI * 2
+    }));
+
+    // Rich jungle platforms with foliage & vines
+    const platforms = [
+      { x: 0,    y: 430, w: 480, h: 110, hasTree: true },
+      { x: 560,  y: 410, w: 260, h: 130 },
+      { x: 900,  y: 350, w: 220, h: 190, hasVines: true },
+      { x: 1200, y: 310, w: 220, h: 230, hasTree: true },
+      { x: 1500, y: 420, w: 300, h: 120 },
+      { x: 1880, y: 360, w: 240, h: 180, hasVines: true },
+      { x: 2200, y: 300, w: 260, h: 240, hasTree: true },
+      { x: 2550, y: 410, w: 550, h: 130 }
+    ];
+    const GOAL_X = 2820;
 
     function initPeer(customJoinId = null) {
       if (peer) {
