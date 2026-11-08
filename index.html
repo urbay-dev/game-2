@@ -16,9 +16,9 @@
       touch-action: manipulation;
     }
     body {
-      background: #0d1f12;
+      background: #06110a;
       color: #e2f8e7;
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       height: 100vh;
       height: 100dvh;
       width: 100vw;
@@ -31,46 +31,52 @@
     }
     #ui {
       position: absolute;
-      top: 8px;
-      left: 8px;
-      right: 8px;
+      top: 10px;
+      left: 12px;
+      right: 12px;
       z-index: 20;
-      background: rgba(13, 31, 18, 0.9);
-      backdrop-filter: blur(8px);
-      border: 1px solid #285430;
-      padding: 6px 12px;
-      border-radius: 12px;
+      background: rgba(10, 26, 16, 0.88);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(82, 183, 136, 0.35);
+      padding: 8px 14px;
+      border-radius: 14px;
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       align-items: center;
       justify-content: space-between;
       font-size: 13px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     }
     .ui-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     input {
-      background: #08150c;
-      border: 1px solid #386641;
+      background: #040d07;
+      border: 1px solid #2d6a4f;
       color: #fff;
-      padding: 6px 8px;
-      border-radius: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
       font-size: 13px;
       outline: none;
-      width: 130px;
+      width: 110px;
     }
+    input:focus { border-color: #52b788; }
     button.btn {
-      background: #386641;
-      color: #fff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
+      background: linear-gradient(135deg, #2d6a4f, #1b4332);
+      border: 1px solid #52b788;
+      color: #e2f8e7;
+      padding: 6px 14px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
       font-size: 12px;
-      transition: background 0.15s;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
-    button.btn:active { background: #6a994e; }
+    button.btn:active {
+      transform: scale(0.96);
+      background: #52b788;
+      color: #040d07;
+    }
     #canvas-wrap {
       position: relative;
       width: 100vw;
@@ -79,32 +85,34 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #08170e;
+      background: #040d07;
     }
     canvas {
       display: block;
       max-width: 100%;
       max-height: 100%;
-      aspect-ratio: 900 / 520;
+      aspect-ratio: 960 / 540;
       object-fit: contain;
-      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      box-shadow: 0 0 30px rgba(0,0,0,0.9);
     }
     .badge {
-      display: inline-block;
-      padding: 2px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
       border-radius: 99px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
     }
-    .badge-p1 { background: #d4a373; color: #3e2723; }
-    .badge-p2 { background: #588157; color: #0d2818; }
+    .badge-p1 { background: #d4a373; color: #2b1810; box-shadow: 0 0 10px rgba(212,163,115,0.4); }
+    .badge-p2 { background: #52b788; color: #041f10; box-shadow: 0 0 10px rgba(82,183,136,0.4); }
 
     /* On-Screen Mobile Controls */
     #mobile-controls {
       position: absolute;
-      bottom: 12px;
-      left: 12px;
-      right: 12px;
+      bottom: 14px;
+      left: 14px;
+      right: 14px;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
@@ -117,32 +125,35 @@
       pointer-events: auto;
     }
     .touch-btn {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.15);
-      border: 2px solid rgba(255, 255, 255, 0.35);
-      backdrop-filter: blur(4px);
+      width: 62px;
+      height: 62px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-size: 24px;
       font-weight: bold;
       color: #fff;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+      transition: transform 0.1s;
     }
     .touch-btn:active, .touch-btn.pressed {
-      background: rgba(106, 153, 78, 0.65);
-      border-color: #a7c957;
-      transform: scale(0.93);
+      background: rgba(82, 183, 136, 0.45);
+      border-color: #74c69d;
+      transform: scale(0.92);
     }
     .btn-jump {
-      width: 70px;
-      height: 70px;
-      background: rgba(88, 129, 87, 0.35);
-      border-color: rgba(167, 201, 87, 0.5);
-      font-size: 20px;
+      width: 72px;
+      height: 72px;
+      border-radius: 24px;
+      background: rgba(45, 106, 79, 0.45);
+      border-color: rgba(82, 183, 136, 0.6);
+      font-size: 22px;
     }
   </style>
 </head>
@@ -160,7 +171,7 @@
   </div>
 
   <div id="canvas-wrap">
-    <canvas id="game" width="900" height="520"></canvas>
+    <canvas id="game" width="960" height="540"></canvas>
   </div>
 
   <div id="mobile-controls">
@@ -177,38 +188,49 @@
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
     
-    // ponytail: P2P manual id sync via PeerJS public cloud, upgrade to dedicated turn/signaling if high traffic
+    // ponytail: WebRTC PeerJS cloud signaling, simple p2p 2-player sync
     const peer = new Peer();
     let conn = null;
     let isHost = false;
     let myRole = null;
 
-    const ROPE_REST_LEN = 140;
+    const ROPE_REST_LEN = 135;
     const ROPE_MAX_LEN = 260;
-    const K_ROPE = 0.08;
+    const K_ROPE = 0.085;
 
     const keys = { left: false, right: false, up: false };
     const remoteKeys = { left: false, right: false, up: false };
 
     const players = {
-      monkey: { x: 120, y: 380, vx: 0, vy: 0, w: 38, h: 38, onGround: false },
-      croc:   { x: 180, y: 390, vx: 0, vy: 0, w: 52, h: 30, onGround: false }
+      monkey: { x: 140, y: 380, vx: 0, vy: 0, w: 38, h: 38, facing: 1, animFrame: 0, onGround: false },
+      croc:   { x: 210, y: 390, vx: 0, vy: 0, w: 54, h: 30, facing: 1, animFrame: 0, onGround: false }
     };
 
     let cameraX = 0;
     let gameState = 'waiting';
+    let tick = 0;
 
+    // Ambient floating fireflies / pollen
+    const particles = Array.from({ length: 30 }, () => ({
+      x: Math.random() * 3200,
+      y: 100 + Math.random() * 380,
+      size: 1 + Math.random() * 2.5,
+      speedX: 0.15 + Math.random() * 0.35,
+      phase: Math.random() * Math.PI * 2
+    }));
+
+    // Rich jungle platforms with foliage & vines
     const platforms = [
-      { x: 0, y: 440, w: 500, h: 80 },
-      { x: 580, y: 440, w: 260, h: 80 },
-      { x: 920, y: 380, w: 220, h: 140 },
-      { x: 1220, y: 340, w: 200, h: 180 },
-      { x: 1500, y: 440, w: 320, h: 80 },
-      { x: 1900, y: 380, w: 240, h: 140 },
-      { x: 2220, y: 320, w: 260, h: 200 },
-      { x: 2560, y: 420, w: 500, h: 100 }
+      { x: 0,    y: 430, w: 480, h: 110, hasTree: true },
+      { x: 560,  y: 410, w: 260, h: 130 },
+      { x: 900,  y: 350, w: 220, h: 190, hasVines: true },
+      { x: 1200, y: 310, w: 220, h: 230, hasTree: true },
+      { x: 1500, y: 420, w: 300, h: 120 },
+      { x: 1880, y: 360, w: 240, h: 180, hasVines: true },
+      { x: 2200, y: 300, w: 260, h: 240, hasTree: true },
+      { x: 2550, y: 410, w: 550, h: 130 }
     ];
-    const GOAL_X = 2800;
+    const GOAL_X = 2820;
 
     peer.on('open', (id) => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -274,8 +296,12 @@
           if (!isHost) {
             players.monkey.x = data.m.x;
             players.monkey.y = data.m.y;
+            players.monkey.vx = data.m.vx;
+            players.monkey.facing = data.m.f;
             players.croc.x = data.c.x;
             players.croc.y = data.c.y;
+            players.croc.vx = data.c.vx;
+            players.croc.facing = data.c.f;
             gameState = data.state;
           }
         }
@@ -287,7 +313,7 @@
       if (conn && conn.open) conn.send({ type: 'input', keys });
     }
 
-    // Keyboard controls
+    // Keyboard handlers
     window.addEventListener('keydown', (e) => {
       if (e.code === 'KeyA' || e.code === 'ArrowLeft')  keys.left = true;
       if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.right = true;
@@ -302,7 +328,7 @@
       emitKey();
     });
 
-    // Touch button handlers
+    // Touch handlers
     function bindTouch(btnId, keyName) {
       const el = document.getElementById(btnId);
       const start = (e) => {
@@ -329,13 +355,20 @@
     bindTouch('btn-jump', 'up');
 
     function applyInput(p, input) {
-      const speed = p === players.monkey ? 0.9 : 0.65;
-      const maxSpd = p === players.monkey ? 5.5 : 4.2;
+      const isMonkey = p === players.monkey;
+      const speed = isMonkey ? 0.95 : 0.7;
+      const maxSpd = isMonkey ? 5.6 : 4.4;
 
-      if (input.left)  p.vx = Math.max(p.vx - speed, -maxSpd);
-      if (input.right) p.vx = Math.min(p.vx + speed, maxSpd);
+      if (input.left) {
+        p.vx = Math.max(p.vx - speed, -maxSpd);
+        p.facing = -1;
+      }
+      if (input.right) {
+        p.vx = Math.min(p.vx + speed, maxSpd);
+        p.facing = 1;
+      }
       if (input.up && p.onGround) {
-        p.vy = p === players.monkey ? -11.5 : -10;
+        p.vy = isMonkey ? -11.8 : -10.2;
         p.onGround = false;
       }
     }
@@ -345,6 +378,9 @@
       p.vy += 0.48;
       p.x += p.vx;
       p.y += p.vy;
+
+      if (Math.abs(p.vx) > 0.2) p.animFrame += 0.2;
+      else p.animFrame = 0;
 
       p.onGround = false;
       for (const b of platforms) {
@@ -357,8 +393,8 @@
         }
       }
 
-      if (p.y > 600) {
-        p.x = 120;
+      if (p.y > 620) {
+        p.x = 140;
         p.y = 300;
         p.vx = 0;
         p.vy = 0;
@@ -391,6 +427,8 @@
     }
 
     function step() {
+      tick++;
+
       if (isHost && gameState === 'playing') {
         applyInput(players.monkey, keys);
         applyInput(players.croc, remoteKeys);
@@ -406,8 +444,8 @@
         if (conn && conn.open) {
           conn.send({
             type: 'sync',
-            m: { x: players.monkey.x, y: players.monkey.y },
-            c: { x: players.croc.x, y: players.croc.y },
+            m: { x: players.monkey.x, y: players.monkey.y, vx: players.monkey.vx, f: players.monkey.facing },
+            c: { x: players.croc.x, y: players.croc.y, vx: players.croc.vx, f: players.croc.facing },
             state: gameState
           });
         }
@@ -417,34 +455,94 @@
         }
       }
 
+      // Smooth camera follows midpoint
       const midX = (players.monkey.x + players.croc.x) / 2;
-      cameraX += (midX - canvas.width / 2 - cameraX) * 0.1;
+      cameraX += (midX - canvas.width / 2 - cameraX) * 0.08;
       cameraX = Math.max(0, cameraX);
 
       render();
       requestAnimationFrame(step);
     }
 
+    // --- ART & RENDERING ---
+    function drawBackground() {
+      // Atmospheric sky gradient
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      skyGrad.addColorStop(0, '#04160c');
+      skyGrad.addColorStop(0.5, '#0c2e1b');
+      skyGrad.addColorStop(1, '#1b4332');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Distant Parallax Mist Mountains
+      ctx.save();
+      ctx.translate(-Math.round(cameraX * 0.2), 0);
+      ctx.fillStyle = 'rgba(20, 60, 40, 0.45)';
+      ctx.beginPath();
+      ctx.moveTo(-100, 360);
+      for (let x = -100; x < 3500; x += 180) {
+        ctx.quadraticCurveTo(x + 90, 180 + Math.sin(x * 0.02) * 50, x + 180, 360);
+      }
+      ctx.lineTo(3500, canvas.height);
+      ctx.lineTo(-100, canvas.height);
+      ctx.fill();
+
+      // Mid-distance canopy silhouettes
+      ctx.fillStyle = 'rgba(15, 48, 30, 0.65)';
+      ctx.beginPath();
+      for (let x = -50; x < 3500; x += 120) {
+        ctx.arc(x, 340 + Math.sin(x) * 20, 65, Math.PI, 0);
+      }
+      ctx.fill();
+      ctx.restore();
+
+      // Ambient Jungle Fireflies
+      ctx.save();
+      for (const p of particles) {
+        p.x += p.speedX;
+        if (p.x > 3200) p.x = 0;
+        const screenX = p.x - cameraX * 0.5;
+        if (screenX > -20 && screenX < canvas.width + 20) {
+          const glow = Math.sin(tick * 0.05 + p.phase) * 0.4 + 0.6;
+          ctx.fillStyle = `rgba(183, 228, 199, ${glow * 0.7})`;
+          ctx.beginPath();
+          ctx.arc(screenX, p.y + Math.sin(tick * 0.03 + p.phase) * 12, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+
     function drawRope() {
       const p1 = players.monkey;
       const p2 = players.croc;
-      const midX = (p1.x + p2.x) / 2;
       const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
-      const sag = Math.max(0, (ROPE_REST_LEN - dist) * 0.4 + 18);
+      const sag = Math.max(0, (ROPE_REST_LEN - dist) * 0.45 + 16);
+      const midX = (p1.x + p2.x) / 2;
       const midY = (p1.y + p2.y) / 2 + sag;
 
       ctx.save();
-      ctx.strokeStyle = '#cda250';
-      ctx.lineWidth = 4;
+      // Rope shadow
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y + 4);
+      ctx.quadraticCurveTo(midX, midY + 4, p2.x, p2.y + 4);
+      ctx.stroke();
+
+      // Main rope
+      ctx.strokeStyle = '#e0a96d';
+      ctx.lineWidth = 5;
       ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(p1.x, p1.y);
       ctx.quadraticCurveTo(midX, midY, p2.x, p2.y);
       ctx.stroke();
 
-      ctx.strokeStyle = '#855b1a';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([4, 6]);
+      // Braided twine detail
+      ctx.strokeStyle = '#7f4f24';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([5, 6]);
       ctx.stroke();
       ctx.restore();
     }
@@ -452,146 +550,303 @@
     function drawMonkey(p) {
       ctx.save();
       ctx.translate(p.x, p.y);
-      
-      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.scale(p.facing, 1);
+
+      const bob = Math.sin(p.animFrame) * 2;
+      const legBob = Math.cos(p.animFrame) * 4;
+
+      // Shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
       ctx.beginPath();
       ctx.ellipse(0, p.h/2 + 2, 16, 6, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#8d5b4c';
+      // Tail with dynamic curve
+      ctx.strokeStyle = '#8b5a2b';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.arc(0, 0, 18, 0, Math.PI * 2);
+      ctx.moveTo(-10, 4);
+      const tailWiggle = Math.sin(tick * 0.1) * 6;
+      ctx.quadraticCurveTo(-26, -6 + tailWiggle, -20, -22 + tailWiggle);
+      ctx.stroke();
+
+      // Legs / Feet
+      ctx.fillStyle = '#6f4518';
+      ctx.beginPath();
+      ctx.arc(-8, 14 + legBob, 4, 0, Math.PI * 2);
+      ctx.arc(8, 14 - legBob, 4, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#e0a96d';
+      // Fur Body
+      ctx.fillStyle = '#8b5a2b';
       ctx.beginPath();
-      ctx.ellipse(0, 2, 12, 10, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 2 + bob, 16, 17, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#8d5b4c';
+      // Belly patch
+      ctx.fillStyle = '#ddb892';
       ctx.beginPath();
-      ctx.arc(-16, -6, 6, 0, Math.PI * 2);
-      ctx.arc(16, -6, 6, 0, Math.PI * 2);
+      ctx.ellipse(3, 4 + bob, 9, 11, 0, 0, Math.PI * 2);
       ctx.fill();
 
+      // Ears
+      ctx.fillStyle = '#8b5a2b';
+      ctx.beginPath();
+      ctx.arc(-14, -8 + bob, 6.5, 0, Math.PI * 2);
+      ctx.arc(14, -8 + bob, 6.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ddb892';
+      ctx.beginPath();
+      ctx.arc(-14, -8 + bob, 3.5, 0, Math.PI * 2);
+      ctx.arc(14, -8 + bob, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Head
+      ctx.fillStyle = '#8b5a2b';
+      ctx.beginPath();
+      ctx.arc(0, -6 + bob, 15, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Face Muzzle
+      ctx.fillStyle = '#ddb892';
+      ctx.beginPath();
+      ctx.ellipse(3, -3 + bob, 11, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyes
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(4, -8 + bob, 4, 0, Math.PI * 2);
+      ctx.fill();
       ctx.fillStyle = '#111';
       ctx.beginPath();
-      ctx.arc(-4, 0, 2.5, 0, Math.PI*2);
-      ctx.arc(4, 0, 2.5, 0, Math.PI*2);
+      ctx.arc(5, -8 + bob, 2.2, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#fff';
+      // Nose & Smile
+      ctx.fillStyle = '#5c3a21';
+      ctx.beginPath();
+      ctx.arc(7, -4 + bob, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#5c3a21';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.arc(5, -2 + bob, 3, 0.1, Math.PI * 0.8);
+      ctx.stroke();
+
+      // Badge Indicator
+      ctx.scale(p.facing, 1);
+      ctx.fillStyle = '#d4a373';
       ctx.font = 'bold 11px system-ui';
       ctx.textAlign = 'center';
-      ctx.fillText('Monyet', 0, -24);
+      ctx.fillText('🐒 Monyet', 0, -28 + bob);
       ctx.restore();
     }
 
     function drawCroc(p) {
       ctx.save();
       ctx.translate(p.x, p.y);
+      ctx.scale(p.facing, 1);
 
-      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      const legSwing = Math.sin(p.animFrame) * 5;
+
+      // Shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
       ctx.beginPath();
-      ctx.ellipse(0, p.h/2 + 2, 24, 7, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, p.h/2 + 2, 28, 8, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#386641';
+      // Tail with swim/walk waggle
+      ctx.fillStyle = '#2d6a4f';
       ctx.beginPath();
-      ctx.roundRect(-24, -12, 48, 24, 8);
+      ctx.moveTo(-24, 0);
+      const wag = Math.sin(tick * 0.15) * 5;
+      ctx.quadraticCurveTo(-38, 2 + wag, -48, 6 + wag);
+      ctx.lineTo(-24, 8);
       ctx.fill();
 
-      ctx.fillStyle = '#6a994e';
+      // Feet with claws
+      ctx.fillStyle = '#1b4332';
       ctx.beginPath();
-      ctx.roundRect(14, -8, 16, 16, 4);
+      ctx.arc(-14 + legSwing, 14, 5, 0, Math.PI * 2);
+      ctx.arc(14 - legSwing, 14, 5, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#285430';
-      for (let i = -16; i <= 8; i += 8) {
+      // Main Crocodile Body
+      ctx.fillStyle = '#40916c';
+      ctx.beginPath();
+      ctx.roundRect(-26, -10, 52, 22, 10);
+      ctx.fill();
+
+      // Belly underplate
+      ctx.fillStyle = '#95d5b2';
+      ctx.beginPath();
+      ctx.roundRect(-16, 4, 34, 7, 4);
+      ctx.fill();
+
+      // Spiky Scales Ridge
+      ctx.fillStyle = '#1b4332';
+      for (let i = -22; i <= 6; i += 7) {
         ctx.beginPath();
-        ctx.moveTo(i, -12);
-        ctx.lineTo(i + 4, -18);
-        ctx.lineTo(i + 8, -12);
+        ctx.moveTo(i, -10);
+        ctx.lineTo(i + 3.5, -16);
+        ctx.lineTo(i + 7, -10);
         ctx.fill();
       }
 
-      ctx.fillStyle = '#e9d8a6';
+      // Long Snout & Jaw
+      ctx.fillStyle = '#52b788';
       ctx.beginPath();
-      ctx.arc(10, -10, 3.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#000';
-      ctx.beginPath();
-      ctx.arc(10, -10, 1.5, 0, Math.PI * 2);
+      ctx.roundRect(16, -6, 22, 16, [4, 8, 8, 4]);
       ctx.fill();
 
+      // Sharp Teeth!
       ctx.fillStyle = '#fff';
+      for (let tx = 22; tx <= 32; tx += 5) {
+        ctx.beginPath();
+        ctx.moveTo(tx, 2);
+        ctx.lineTo(tx + 2, -2);
+        ctx.lineTo(tx + 4, 2);
+        ctx.fill();
+      }
+
+      // Nostril
+      ctx.fillStyle = '#1b4332';
+      ctx.beginPath();
+      ctx.arc(33, -3, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Bulging Eye
+      ctx.fillStyle = '#52b788';
+      ctx.beginPath();
+      ctx.arc(12, -9, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffb703';
+      ctx.beginPath();
+      ctx.arc(12, -9, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#081c15';
+      ctx.beginPath();
+      ctx.arc(13, -9, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Badge Indicator
+      ctx.scale(p.facing, 1);
+      ctx.fillStyle = '#74c69d';
       ctx.font = 'bold 11px system-ui';
       ctx.textAlign = 'center';
-      ctx.fillText('Buaya', 0, -24);
+      ctx.fillText('🐊 Buaya', 0, -28);
       ctx.restore();
+    }
+
+    function drawPlatform(b) {
+      // Grass top foliage with lush gradient
+      const grassGrad = ctx.createLinearGradient(0, b.y, 0, b.y + 14);
+      grassGrad.addColorStop(0, '#74c69d');
+      grassGrad.addColorStop(1, '#40916c');
+      ctx.fillStyle = grassGrad;
+      ctx.beginPath();
+      ctx.roundRect(b.x, b.y, b.w, 14, [10, 10, 0, 0]);
+      ctx.fill();
+
+      // Rich Earth body with layered bedrock
+      const dirtGrad = ctx.createLinearGradient(0, b.y + 14, 0, b.y + b.h);
+      dirtGrad.addColorStop(0, '#2d6a4f');
+      dirtGrad.addColorStop(1, '#081c15');
+      ctx.fillStyle = dirtGrad;
+      ctx.fillRect(b.x, b.y + 14, b.w, b.h - 14);
+
+      // Hanging foliage vines under platform
+      if (b.hasVines) {
+        ctx.strokeStyle = '#52b788';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        for (let vx = b.x + 30; vx < b.x + b.w - 20; vx += 45) {
+          ctx.beginPath();
+          ctx.moveTo(vx, b.y + 14);
+          ctx.quadraticCurveTo(vx + 6, b.y + 40, vx - 4, b.y + 55);
+          ctx.stroke();
+        }
+      }
+
+      // Decorative Jungle Bush / Tree on top
+      if (b.hasTree) {
+        ctx.fillStyle = '#1b4332';
+        ctx.fillRect(b.x + 20, b.y - 25, 8, 25);
+        ctx.fillStyle = '#2d6a4f';
+        ctx.beginPath();
+        ctx.arc(b.x + 24, b.y - 32, 20, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#52b788';
+        ctx.beginPath();
+        ctx.arc(b.x + 22, b.y - 35, 14, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
     function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      grad.addColorStop(0, '#10281b');
-      grad.addColorStop(1, '#08170e');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawBackground();
 
       ctx.save();
       ctx.translate(-Math.round(cameraX), 0);
 
+      // Platforms
       for (const b of platforms) {
-        ctx.fillStyle = '#40916c';
-        ctx.beginPath();
-        ctx.roundRect(b.x, b.y, b.w, b.h, [8, 8, 0, 0]);
-        ctx.fill();
-
-        ctx.fillStyle = '#2d6a4f';
-        ctx.fillRect(b.x, b.y + 10, b.w, b.h - 10);
+        drawPlatform(b);
       }
 
+      // Golden Finish Shrine with animated flag
       ctx.fillStyle = '#ffb703';
-      ctx.fillRect(GOAL_X, 300, 8, 120);
+      ctx.fillRect(GOAL_X, 280, 8, 140);
+      const flagWave = Math.sin(tick * 0.1) * 5;
       ctx.beginPath();
-      ctx.moveTo(GOAL_X + 8, 300);
-      ctx.lineTo(GOAL_X + 54, 320);
-      ctx.lineTo(GOAL_X + 8, 340);
+      ctx.moveTo(GOAL_X + 8, 280);
+      ctx.quadraticCurveTo(GOAL_X + 32, 290 + flagWave, GOAL_X + 54, 305);
+      ctx.quadraticCurveTo(GOAL_X + 32, 320 + flagWave, GOAL_X + 8, 330);
       ctx.fillStyle = '#e63946';
+      ctx.fill();
+
+      // Goal glow
+      ctx.fillStyle = 'rgba(255, 183, 3, 0.2)';
+      ctx.beginPath();
+      ctx.arc(GOAL_X + 4, 350, 48, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 14px system-ui';
-      ctx.fillText('FINISH', GOAL_X - 10, 280);
+      ctx.fillText('FINISH 🏁', GOAL_X - 16, 260);
 
+      // Dynamic Rope & Alive Characters
       drawRope();
       drawMonkey(players.monkey);
       drawCroc(players.croc);
 
       ctx.restore();
 
+      // Overlays
       if (gameState === 'waiting') {
-        ctx.fillStyle = 'rgba(0,0,0,0.65)';
+        ctx.fillStyle = 'rgba(4, 18, 10, 0.75)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#fff';
-        ctx.font = 'bold 22px system-ui';
+        ctx.font = 'bold 24px system-ui';
         ctx.textAlign = 'center';
-        ctx.fillText('Tali Rimba: Monyet & Buaya', canvas.width / 2, canvas.height / 2 - 20);
-        ctx.font = '14px system-ui';
-        ctx.fillStyle = '#a7c957';
+        ctx.fillText('🌴 Tali Rimba: Monyet & Buaya 🌴', canvas.width / 2, canvas.height / 2 - 25);
+        ctx.font = '15px system-ui';
+        ctx.fillStyle = '#95d5b2';
         ctx.fillText('Salin link & kirim ke teman untuk main berdua!', canvas.width / 2, canvas.height / 2 + 15);
       } else if (gameState === 'win') {
-        ctx.fillStyle = 'rgba(13, 40, 24, 0.88)';
+        ctx.fillStyle = 'rgba(6, 28, 15, 0.9)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#ffb703';
-        ctx.font = 'bold 32px system-ui';
+        ctx.font = 'bold 36px system-ui';
         ctx.textAlign = 'center';
-        ctx.fillText('MENANG BERDUA! 🎉', canvas.width / 2, canvas.height / 2 - 10);
-        ctx.font = '15px system-ui';
+        ctx.fillText('🏆 MENANG BERDUA! 🏆', canvas.width / 2, canvas.height / 2 - 15);
+        ctx.font = '16px system-ui';
         ctx.fillStyle = '#e2f8e7';
-        ctx.fillText('Kerjasama Monyet & Buaya berhasil!', canvas.width / 2, canvas.height / 2 + 25);
+        ctx.fillText('Kerjasama Monyet & Buaya sukses menembus rimba!', canvas.width / 2, canvas.height / 2 + 25);
       }
     }
 
