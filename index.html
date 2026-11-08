@@ -184,7 +184,7 @@
   <div id="ui">
     <div class="ui-group">
       <span id="role-text">Status: <b>Menghubungkan...</b></span>
-      <span id="room-info" style="display:none;">Room: <b id="my-id"></b></span>
+      <span id="room-info" style="display:none;cursor:pointer;" onclick="copyId()" title="Klik untuk salin ID">Room: <b id="my-id" style="text-decoration:underline;"></b></span>
       <button id="copy-btn" class="btn" style="display:none;" onclick="copyLink()">Salin Link</button>
       <button id="new-room-btn" class="btn" onclick="createNewRoom()">Buat Room Baru</button>
     </div>
@@ -245,15 +245,16 @@
         const urlParams = new URLSearchParams(window.location.search);
         const joinId = customJoinId || urlParams.get('join');
         
-        if (joinId && joinId !== id) {
+        // Only connect as guest if joinId is provided and NOT equal to our own id
+        if (joinId && joinId.trim() && joinId.trim() !== id) {
           document.getElementById('join-input').value = joinId;
-          connectToHost(joinId);
+          connectToHost(joinId.trim());
         } else {
           isHost = true;
           myRole = 'monkey';
           document.getElementById('role-text').innerHTML = '<span class="badge badge-p1">🐒 Monyet (Host)</span>';
           document.getElementById('room-info').style.display = 'inline';
-          document.getElementById('my-id').textContent = id.slice(0, 6);
+          document.getElementById('my-id').textContent = id;
           document.getElementById('copy-btn').style.display = 'inline';
           document.getElementById('mobile-copy-btn').style.display = 'inline-block';
           document.getElementById('join-box').style.display = 'none';
@@ -273,8 +274,17 @@
       });
 
       peer.on('error', (err) => {
-        console.error('Peer error:', err);
-        document.getElementById('role-text').innerHTML = `<span style="color:#ff6b6b">Koneksi gagal: ${err.type}</span>`;
+        console.warn('Peer warning/error:', err.type, err);
+        if (err.type === 'peer-unavailable') {
+          document.getElementById('role-text').innerHTML = 
+            '<span style="color:#ffb703;font-size:12px;">⚠️ Room teman tidak ditemukan / belum siap. Pastikan Host sudah buka linknya, atau buat room baru.</span>';
+          document.getElementById('join-box').style.display = 'flex';
+        } else if (err.type === 'unavailable-id') {
+          createNewRoom();
+        } else {
+          document.getElementById('role-text').innerHTML = 
+            `<span style="color:#ff6b6b;font-size:12px;">Koneksi: ${err.type}</span>`;
+        }
       });
     }
 
@@ -322,6 +332,18 @@
         alert('Link Room disalin! Kirim ke temanmu.');
       } else {
         prompt('Salin link room ini:', url);
+      }
+    }
+
+    function copyId() {
+      const id = fullHostId || (peer ? peer.id : '');
+      if (id) {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(id);
+          alert('ID disalin: ' + id);
+        } else {
+          prompt('Salin ID ini:', id);
+        }
       }
     }
 
