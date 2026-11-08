@@ -239,8 +239,9 @@
     let fullHostId = null;
 
     const ROPE_REST_LEN = 135;
-    const ROPE_MAX_LEN = 260;
-    const K_ROPE = 0.085;
+    const ROPE_MAX_LEN = 250;
+    const K_ROPE = 0.055;
+    const ROPE_DAMPING = 0.92;
 
     const keys = { left: false, right: false, up: false };
     const remoteKeys = { left: false, right: false, up: false };
@@ -253,6 +254,23 @@
     let cameraX = 0;
     let gameState = 'waiting';
     let tick = 0;
+    let heartScore = 0;
+
+    // Heart coins scattered along the jungle path
+    const heartCoins = [
+      { id: 1,  x: 320,  y: 360, collected: false },
+      { id: 2,  x: 520,  y: 330, collected: false },
+      { id: 3,  x: 700,  y: 340, collected: false },
+      { id: 4,  x: 860,  y: 280, collected: false },
+      { id: 5,  x: 1040, y: 260, collected: false },
+      { id: 6,  x: 1160, y: 230, collected: false },
+      { id: 7,  x: 1350, y: 240, collected: false },
+      { id: 8,  x: 1650, y: 350, collected: false },
+      { id: 9,  x: 1840, y: 290, collected: false },
+      { id: 10, x: 2050, y: 260, collected: false },
+      { id: 11, x: 2350, y: 220, collected: false },
+      { id: 12, x: 2680, y: 340, collected: false }
+    ];
 
     // Ambient floating fireflies / pollen
     const particles = Array.from({ length: 30 }, () => ({
@@ -405,13 +423,23 @@
           Object.assign(remoteKeys, data.keys);
         } else if (data.type === 'sync') {
           gameState = data.state || 'playing';
+          if (data.hearts) {
+            heartScore = data.hearts;
+            if (data.collectedIds) {
+              data.collectedIds.forEach(id => {
+                const c = heartCoins.find(item => item.id === id);
+                if (c) c.collected = true;
+              });
+            }
+          }
           if (!isHost) {
-            players.monkey.x = data.m.x;
-            players.monkey.y = data.m.y;
+            // Smooth client interpolation
+            players.monkey.x += (data.m.x - players.monkey.x) * 0.4;
+            players.monkey.y += (data.m.y - players.monkey.y) * 0.4;
             players.monkey.vx = data.m.vx;
             players.monkey.facing = data.m.f;
-            players.croc.x = data.c.x;
-            players.croc.y = data.c.y;
+            players.croc.x += (data.c.x - players.croc.x) * 0.4;
+            players.croc.y += (data.c.y - players.croc.y) * 0.4;
             players.croc.vx = data.c.vx;
             players.croc.facing = data.c.f;
           }
@@ -470,30 +498,31 @@
 
     function applyInput(p, input) {
       const isMonkey = p === players.monkey;
-      const speed = isMonkey ? 0.95 : 0.7;
-      const maxSpd = isMonkey ? 5.6 : 4.4;
+      // Smooth acceleration & gentle deceleration
+      const accel = isMonkey ? 0.8 : 0.65;
+      const maxSpd = isMonkey ? 5.2 : 4.4;
 
       if (input.left) {
-        p.vx = Math.max(p.vx - speed, -maxSpd);
+        p.vx = Math.max(p.vx - accel, -maxSpd);
         p.facing = -1;
       }
       if (input.right) {
-        p.vx = Math.min(p.vx + speed, maxSpd);
+        p.vx = Math.min(p.vx + accel, maxSpd);
         p.facing = 1;
       }
       if (input.up && p.onGround) {
-        p.vy = isMonkey ? -11.8 : -10.2;
+        p.vy = isMonkey ? -11.2 : -10.0;
         p.onGround = false;
       }
     }
 
     function updatePhysics(p) {
-      p.vx *= 0.85;
-      p.vy += 0.48;
+      p.vx *= 0.88; // Smooth inertia damping
+      p.vy += 0.45; // Smooth realistic gravity
       p.x += p.vx;
       p.y += p.vy;
 
-      if (Math.abs(p.vx) > 0.2) p.animFrame += 0.2;
+      if (Math.abs(p.vx) > 0.2) p.animFrame += 0.18;
       else p.animFrame = 0;
 
       p.onGround = false;
@@ -521,21 +550,36 @@
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       if (dist > ROPE_REST_LEN) {
-        const force = (dist - ROPE_REST_LEN) * K_ROPE;
+        // Elastic spring with velocity damping for zero jitter
+        const delta = dist - ROPE_REST_LEN;
+        const force = delta * K_ROPE;
         const nx = dx / dist;
         const ny = dy / dist;
 
-        players.monkey.vx += nx * force * 0.65;
-        players.monkey.vy += ny * force * 0.65;
-        players.croc.vx   -= nx * force * 0.35;
-        players.croc.vy   -= ny * force * 0.35;
+        players.monkey.vx = (players.monkey.vx + nx * force * 0.6) * ROPE_DAMPING;
+        players.monkey.vy = (players.monkey.vy + ny * force * 0.6) * ROPE_DAMPING;
+        players.croc.vx   = (players.croc.vx   - nx * force * 0.4) * ROPE_DAMPING;
+        players.croc.vy   = (players.croc.vy   - ny * force * 0.4) * ROPE_DAMPING;
 
+        // Soft position relaxation if pulled over max limit
         if (dist > ROPE_MAX_LEN) {
-          const excess = (dist - ROPE_MAX_LEN) / 2;
-          players.monkey.x += nx * excess * 0.65;
-          players.monkey.y += ny * excess * 0.65;
-          players.croc.x   -= nx * excess * 0.35;
-          players.croc.y   -= ny * excess * 0.35;
+          const excess = (dist - ROPE_MAX_LEN) * 0.35;
+          players.monkey.x += nx * excess * 0.6;
+          players.monkey.y += ny * excess * 0.6;
+          players.croc.x   -= nx * excess * 0.4;
+          players.croc.y   -= ny * excess * 0.4;
+        }
+      }
+    }
+
+    function checkCoins() {
+      for (const coin of heartCoins) {
+        if (coin.collected) continue;
+        const d1 = Math.hypot(players.monkey.x - coin.x, players.monkey.y - coin.y);
+        const d2 = Math.hypot(players.croc.x - coin.x, players.croc.y - coin.y);
+        if (d1 < 28 || d2 < 32) {
+          coin.collected = true;
+          heartScore += 1;
         }
       }
     }
@@ -550,6 +594,7 @@
         updatePhysics(players.monkey);
         updatePhysics(players.croc);
         updateRope();
+        checkCoins();
 
         if (players.monkey.x >= GOAL_X && players.croc.x >= GOAL_X) {
           gameState = 'win';
@@ -560,6 +605,8 @@
             type: 'sync',
             m: { x: players.monkey.x, y: players.monkey.y, vx: players.monkey.vx, f: players.monkey.facing },
             c: { x: players.croc.x, y: players.croc.y, vx: players.croc.vx, f: players.croc.facing },
+            hearts: heartScore,
+            collectedIds: heartCoins.filter(c => c.collected).map(c => c.id),
             state: gameState
           });
         }
@@ -635,9 +682,13 @@
       const p1 = players.monkey;
       const p2 = players.croc;
       const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
-      const sag = Math.max(0, (ROPE_REST_LEN - dist) * 0.45 + 16);
+      const sag = Math.max(0, (ROPE_REST_LEN - dist) * 0.4 + 14);
       const midX = (p1.x + p2.x) / 2;
       const midY = (p1.y + p2.y) / 2 + sag;
+
+      // Dynamic rope tension color
+      const isStretched = dist > ROPE_REST_LEN * 1.35;
+      const ropeColor = isStretched ? '#ffb703' : '#e0a96d';
 
       ctx.save();
       // Rope shadow
@@ -649,8 +700,8 @@
       ctx.stroke();
 
       // Main rope
-      ctx.strokeStyle = '#e0a96d';
-      ctx.lineWidth = 5;
+      ctx.strokeStyle = ropeColor;
+      ctx.lineWidth = isStretched ? 4 : 5;
       ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(p1.x, p1.y);
@@ -659,9 +710,51 @@
 
       // Braided twine detail
       ctx.strokeStyle = '#7f4f24';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2.2;
       ctx.setLineDash([5, 6]);
       ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawHeart(x, y, size) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      // Floating bob & rotation
+      const bob = Math.sin(tick * 0.08 + x) * 5;
+      ctx.translate(0, bob);
+
+      // Golden Heart Glow
+      ctx.fillStyle = 'rgba(255, 75, 110, 0.3)';
+      ctx.beginPath();
+      ctx.arc(0, 0, size * 1.6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Shiny Gold Outer Coin
+      ctx.fillStyle = '#ffb703';
+      ctx.beginPath();
+      ctx.arc(0, 0, size, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#fb8500';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Glowing Red Heart in center
+      ctx.fillStyle = '#e63946';
+      ctx.beginPath();
+      const s = size * 0.55;
+      ctx.moveTo(0, s * 0.7);
+      ctx.bezierCurveTo(-s * 1.2, -s * 0.2, -s * 0.9, -s * 1.1, 0, -s * 0.4);
+      ctx.bezierCurveTo(s * 0.9, -s * 1.1, s * 1.2, -s * 0.2, 0, s * 0.7);
+      ctx.fill();
+
+      // Heart shine highlight
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.beginPath();
+      ctx.arc(-s * 0.35, -s * 0.45, s * 0.2, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.restore();
     }
 
@@ -938,11 +1031,37 @@
       ctx.font = 'bold 14px system-ui';
       ctx.fillText('FINISH 🏁', GOAL_X - 16, 260);
 
+      // Draw Heart Coins
+      for (const coin of heartCoins) {
+        if (!coin.collected) {
+          drawHeart(coin.x, coin.y, 14);
+        }
+      }
+
       // Dynamic Rope & Alive Characters
       drawRope();
       drawMonkey(players.monkey);
       drawCroc(players.croc);
 
+      ctx.restore();
+
+      // In-game HUD: Heart Score
+      ctx.save();
+      ctx.fillStyle = 'rgba(10, 26, 16, 0.8)';
+      ctx.strokeStyle = '#52b788';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(14, 60, 95, 34, 12);
+      ctx.fill();
+      ctx.stroke();
+
+      // Mini heart icon
+      ctx.fillStyle = '#e63946';
+      ctx.font = '16px system-ui';
+      ctx.fillText('💖', 24, 83);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 15px system-ui';
+      ctx.fillText(heartScore + ' / ' + heartCoins.length, 52, 83);
       ctx.restore();
 
       // Overlays
