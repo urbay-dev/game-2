@@ -79,22 +79,20 @@
       color: #040d07;
     }
     #canvas-wrap {
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
       height: 100dvh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      overflow: hidden;
       background: #040d07;
     }
     canvas {
       display: block;
-      max-width: 100%;
-      max-height: 100%;
-      aspect-ratio: 960 / 540;
-      object-fit: contain;
-      box-shadow: 0 0 30px rgba(0,0,0,0.9);
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .badge {
       display: inline-flex;
@@ -196,7 +194,7 @@
   </div>
 
   <div id="canvas-wrap">
-    <canvas id="game" width="960" height="540"></canvas>
+    <canvas id="game"></canvas>
   </div>
 
   <div id="mobile-controls">
@@ -215,6 +213,13 @@
   <script>
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
     
     // WebRTC PeerJS with reliable Anthropic & Twilio public STUN servers
     const peerConfig = {
@@ -564,17 +569,20 @@
         }
       }
 
-      // Smooth camera follows midpoint
+      // Dynamic responsive scale so gameplay stays consistent across portrait/landscape
+      const baseHeight = 540;
+      const scale = canvas.height / baseHeight;
       const midX = (players.monkey.x + players.croc.x) / 2;
-      cameraX += (midX - canvas.width / 2 - cameraX) * 0.08;
+      const targetCamX = midX - (canvas.width / 2) / scale;
+      cameraX += (targetCamX - cameraX) * 0.08;
       cameraX = Math.max(0, cameraX);
 
-      render();
+      render(scale);
       requestAnimationFrame(step);
     }
 
     // --- ART & RENDERING ---
-    function drawBackground() {
+    function drawBackground(scale) {
       // Atmospheric sky gradient
       const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
       skyGrad.addColorStop(0, '#04160c');
@@ -585,6 +593,7 @@
 
       // Distant Parallax Mist Mountains
       ctx.save();
+      ctx.scale(scale, scale);
       ctx.translate(-Math.round(cameraX * 0.2), 0);
       ctx.fillStyle = 'rgba(20, 60, 40, 0.45)';
       ctx.beginPath();
@@ -592,8 +601,8 @@
       for (let x = -100; x < 3500; x += 180) {
         ctx.quadraticCurveTo(x + 90, 180 + Math.sin(x * 0.02) * 50, x + 180, 360);
       }
-      ctx.lineTo(3500, canvas.height);
-      ctx.lineTo(-100, canvas.height);
+      ctx.lineTo(3500, canvas.height / scale);
+      ctx.lineTo(-100, canvas.height / scale);
       ctx.fill();
 
       // Mid-distance canopy silhouettes
@@ -610,12 +619,12 @@
       for (const p of particles) {
         p.x += p.speedX;
         if (p.x > 3200) p.x = 0;
-        const screenX = p.x - cameraX * 0.5;
+        const screenX = (p.x - cameraX * 0.5) * scale;
         if (screenX > -20 && screenX < canvas.width + 20) {
           const glow = Math.sin(tick * 0.05 + p.phase) * 0.4 + 0.6;
           ctx.fillStyle = `rgba(183, 228, 199, ${glow * 0.7})`;
           ctx.beginPath();
-          ctx.arc(screenX, p.y + Math.sin(tick * 0.03 + p.phase) * 12, p.size, 0, Math.PI * 2);
+          ctx.arc(screenX, (p.y + Math.sin(tick * 0.03 + p.phase) * 12) * scale, p.size * scale, 0, Math.PI * 2);
           ctx.fill();
         }
       }
@@ -894,12 +903,13 @@
       }
     }
 
-    function render() {
+    function render(scale) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      drawBackground();
+      drawBackground(scale);
 
       ctx.save();
+      ctx.scale(scale, scale);
       ctx.translate(-Math.round(cameraX), 0);
 
       // Platforms
