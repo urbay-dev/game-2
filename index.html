@@ -295,8 +295,8 @@
           connectToHost(joinId.trim());
         } else {
           isHost = true;
-          myRole = 'monkey';
-          document.getElementById('role-text').innerHTML = '<span class="badge badge-p1">🐒 Irma (Host)</span>';
+          myRole = 'croc';
+          document.getElementById('role-text').innerHTML = '<span class="badge badge-p2">🐊 Ubay (Host)</span>';
           document.getElementById('room-info').style.display = 'inline';
           document.getElementById('my-id').textContent = id;
           document.getElementById('copy-btn').style.display = 'inline';
@@ -313,8 +313,8 @@
         setupConnection();
         conn.on('open', () => {
           gameState = 'playing';
-          conn.send({ type: 'init', role: 'croc' });
-          document.getElementById('role-text').innerHTML = '<span class="badge badge-p1">🐒 Host (Irma) - Terhubung!</span>';
+          conn.send({ type: 'init', role: 'monkey' });
+          document.getElementById('role-text').innerHTML = '<span class="badge badge-p2">🐊 Host (Ubay) - Terhubung!</span>';
           document.getElementById('mobile-copy-btn').style.display = 'none';
         });
       });
@@ -343,7 +343,7 @@
 
     function connectToHost(hostId) {
       isHost = false;
-      myRole = 'croc';
+      myRole = 'monkey';
       document.getElementById('role-text').innerHTML = 'Status: <b>Menghubungkan ke teman...</b>';
 
       conn = peer.connect(hostId, { reliable: true });
@@ -359,7 +359,7 @@
       conn.on('open', () => {
         clearTimeout(connectTimeout);
         gameState = 'playing';
-        document.getElementById('role-text').innerHTML = '<span class="badge badge-p2">🐊 Ubay (Guest) - Terhubung!</span>';
+        document.getElementById('role-text').innerHTML = '<span class="badge badge-p1">🐒 Irma (Guest) - Terhubung!</span>';
         document.getElementById('join-box').style.display = 'none';
         document.getElementById('room-info').style.display = 'none';
         document.getElementById('copy-btn').style.display = 'none';
@@ -544,8 +544,8 @@
       tick++;
 
       if (isHost && gameState === 'playing') {
-        applyInput(players.monkey, keys);
-        applyInput(players.croc, remoteKeys);
+        applyInput(players.croc, keys);
+        applyInput(players.monkey, remoteKeys);
         
         updatePhysics(players.monkey);
         updatePhysics(players.croc);
