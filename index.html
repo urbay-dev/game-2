@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Tali Rimba: Monyet & Buaya</title>
+  <title>Tali Rimba: Irma & Ubay</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐒</text></svg>">
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
@@ -296,7 +296,7 @@
         } else {
           isHost = true;
           myRole = 'monkey';
-          document.getElementById('role-text').innerHTML = '<span class="badge badge-p1">🐒 Monyet (Host)</span>';
+          document.getElementById('role-text').innerHTML = '<span class="badge badge-p1">🐒 Irma (Host)</span>';
           document.getElementById('room-info').style.display = 'inline';
           document.getElementById('my-id').textContent = id;
           document.getElementById('copy-btn').style.display = 'inline';
@@ -314,7 +314,7 @@
         conn.on('open', () => {
           gameState = 'playing';
           conn.send({ type: 'init', role: 'croc' });
-          document.getElementById('role-text').innerHTML = '<span class="badge badge-p1">🐒 Host (Monyet) - Terhubung!</span>';
+          document.getElementById('role-text').innerHTML = '<span class="badge badge-p1">🐒 Host (Irma) - Terhubung!</span>';
           document.getElementById('mobile-copy-btn').style.display = 'none';
         });
       });
@@ -359,7 +359,7 @@
       conn.on('open', () => {
         clearTimeout(connectTimeout);
         gameState = 'playing';
-        document.getElementById('role-text').innerHTML = '<span class="badge badge-p2">🐊 Buaya (Guest) - Terhubung!</span>';
+        document.getElementById('role-text').innerHTML = '<span class="badge badge-p2">🐊 Ubay (Guest) - Terhubung!</span>';
         document.getElementById('join-box').style.display = 'none';
         document.getElementById('room-info').style.display = 'none';
         document.getElementById('copy-btn').style.display = 'none';
@@ -758,7 +758,7 @@
       ctx.fillStyle = '#d4a373';
       ctx.font = 'bold 11px system-ui';
       ctx.textAlign = 'center';
-      ctx.fillText('🐒 Monyet', 0, -28 + bob);
+      ctx.fillText('🐒 Irma', 0, -28 + bob);
       ctx.restore();
     }
 
@@ -854,7 +854,7 @@
       ctx.fillStyle = '#74c69d';
       ctx.font = 'bold 11px system-ui';
       ctx.textAlign = 'center';
-      ctx.fillText('🐊 Buaya', 0, -28);
+      ctx.fillText('🐊 Ubay', 0, -28);
       ctx.restore();
     }
 
@@ -952,7 +952,7 @@
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 24px system-ui';
         ctx.textAlign = 'center';
-        ctx.fillText('🌴 Tali Rimba: Monyet & Buaya 🌴', canvas.width / 2, canvas.height / 2 - 25);
+        ctx.fillText('🌴 Tali Rimba: Irma & Ubay 🌴', canvas.width / 2, canvas.height / 2 - 25);
         ctx.font = '15px system-ui';
         ctx.fillStyle = '#95d5b2';
         ctx.fillText('Salin link & kirim ke teman untuk main berdua!', canvas.width / 2, canvas.height / 2 + 15);
@@ -965,7 +965,7 @@
         ctx.fillText('🏆 MENANG BERDUA! 🏆', canvas.width / 2, canvas.height / 2 - 15);
         ctx.font = '16px system-ui';
         ctx.fillStyle = '#e2f8e7';
-        ctx.fillText('Kerjasama Monyet & Buaya sukses menembus rimba!', canvas.width / 2, canvas.height / 2 + 25);
+        ctx.fillText('Kerjasama Irma & Ubay sukses menembus rimba!', canvas.width / 2, canvas.height / 2 + 25);
       }
     }
 
