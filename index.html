@@ -215,7 +215,7 @@
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
     
-    // WebRTC PeerJS with multiple STUN servers for cross-network NAT traversal
+    // WebRTC PeerJS with reliable Anthropic & Twilio public STUN servers
     const peerConfig = {
       config: {
         iceServers: [
@@ -262,12 +262,14 @@
       });
 
       peer.on('connection', (c) => {
-        if (conn) { c.close(); return; }
+        if (conn) {
+          try { conn.close(); } catch(e){}
+        }
         conn = c;
         setupConnection();
         conn.on('open', () => {
-          conn.send({ type: 'init', role: 'croc' });
           gameState = 'playing';
+          conn.send({ type: 'init', role: 'croc' });
           document.getElementById('role-text').innerHTML = '<span class="badge badge-p1">🐒 Host (Monyet) - Terhubung!</span>';
           document.getElementById('mobile-copy-btn').style.display = 'none';
         });
@@ -312,6 +314,7 @@
 
       conn.on('open', () => {
         clearTimeout(connectTimeout);
+        gameState = 'playing';
         document.getElementById('role-text').innerHTML = '<span class="badge badge-p2">🐊 Buaya (Guest) - Terhubung!</span>';
         document.getElementById('join-box').style.display = 'none';
         document.getElementById('room-info').style.display = 'none';
@@ -357,6 +360,7 @@
         } else if (data.type === 'input') {
           Object.assign(remoteKeys, data.keys);
         } else if (data.type === 'sync') {
+          gameState = data.state || 'playing';
           if (!isHost) {
             players.monkey.x = data.m.x;
             players.monkey.y = data.m.y;
@@ -366,11 +370,13 @@
             players.croc.y = data.c.y;
             players.croc.vx = data.c.vx;
             players.croc.facing = data.c.f;
-            gameState = data.state;
           }
         }
       });
-      conn.on('close', () => { gameState = 'waiting'; });
+      conn.on('close', () => {
+        gameState = 'waiting';
+        document.getElementById('role-text').innerHTML = '<span style="color:#ffb703;">Teman terputus. Menunggu kembali...</span>';
+      });
     }
 
     function emitKey() {
