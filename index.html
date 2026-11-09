@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Tali Rimba: Irma & Ubay</title>
+  <title>Tali Rimba: Duo Penjelajah</title>
+  <meta name="description" content="Petualangan platformer kooperatif Irma dan Ubay menembus hutan, menghindari duri, dan bertahan sejauh mungkin bersama.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐒</text></svg>">
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
@@ -118,33 +119,10 @@
       z-index: 25;
       pointer-events: none;
     }
-    .dpad, .action-pad, .center-pad {
+    .dpad, .action-pad {
       display: flex;
       gap: 12px;
       pointer-events: auto;
-    }
-    .center-pad {
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .mobile-copy-btn {
-      background: rgba(10, 36, 22, 0.88);
-      border: 1.5px solid #52b788;
-      color: #95d5b2;
-      padding: 8px 14px;
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      display: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .mobile-copy-btn:active {
-      transform: scale(0.94);
-      background: #52b788;
-      color: #041f10;
     }
     .touch-btn {
       width: 62px;
@@ -177,10 +155,25 @@
       border-color: rgba(82, 183, 136, 0.6);
       font-size: 22px;
     }
-  </style>
+  
+    #ui {background:#15291fef;border-color:#a18b55;right:auto;max-width:calc(100% - 24px)}
+    #camp {position:absolute;z-index:8;left:7vw;top:34%;padding:22px 32px;color:#fff5cc;background:linear-gradient(100deg,#142d22f2,#142d22cc);border-left:4px solid #ffc957;border-radius:0 18px 18px 0;box-shadow:0 10px 35px #09251955}
+    #camp small {font-weight:800;color:#e4c383;letter-spacing:.21em}
+    #camp h1 {font:italic 1000 clamp(42px,7vw,94px)/1 system-ui;letter-spacing:-.07em;color:#ffd267;text-shadow:0 4px #783715;margin:.12em 0}
+    #camp p {font-size:14px;margin:10px 0 17px}
+    #camp .theme-line {font-size:12px;text-transform:uppercase;letter-spacing:.11em;color:#ffe4a0;font-weight:800;margin:7px 0 4px}
+    #camp button {color:#371f13;background:linear-gradient(#ffdf78,#ffad37);border:2px solid #fff1a9;border-radius:10px;padding:10px 19px;font-weight:800;cursor:pointer;box-shadow:0 3px #81491f}
+    #camp[hidden]{display:none}
+    @media(max-width:600px){#camp{left:5vw;right:5vw;top:30%;padding:19px}}
+    #settings {position:absolute;z-index:22;top:12px;right:14px;width:46px;height:46px;border-radius:50%;border:2px solid #ffe0a0;background:linear-gradient(#ffca5b,#df841c);color:#432914;font: bold 26px system-ui;box-shadow:0 3px 0 #704722;cursor:pointer}
+    #settings:focus-visible {outline:3px solid white}
+    #ui {top:68px;left:auto;right:14px;width:min(350px,calc(100% - 28px));padding:16px}
+    #ui[hidden]{display:none}
+    </style>
 </head>
 <body>
-  <div id="ui">
+  <button id="settings" title="Pengaturan" aria-label="Pengaturan" aria-controls="ui" aria-expanded="false">&#9881;</button>
+  <div id="ui" hidden>
     <div class="ui-group">
       <span id="role-text">Status: <b>Menghubungkan...</b></span>
       <span id="room-info" style="display:none;cursor:pointer;" onclick="copyId()" title="Klik untuk salin ID">Room: <b id="my-id" style="text-decoration:underline;"></b></span>
@@ -193,6 +186,7 @@
     </div>
   </div>
 
+  <section id="camp"><small>PETUALANGAN KOOPERATIF • IRMA &amp; UBAY</small><h1>Tali Rimba</h1><p class="theme-line">Tema: hutan tropis, persahabatan, dan aksi platformer.</p><p>Lompat, ayunkan tali, dan hindari duri bersama. Bantu Irma si monyet dan Ubay si buaya menembus rimba sejauh mungkin tanpa terpisah.</p><button id="practice">Latihan sendiri</button></section>
   <div id="canvas-wrap">
     <canvas id="game"></canvas>
   </div>
@@ -202,15 +196,28 @@
       <button class="touch-btn" id="btn-left">◀</button>
       <button class="touch-btn" id="btn-right">▶</button>
     </div>
-    <div class="center-pad">
-      <button class="mobile-copy-btn" id="mobile-copy-btn" onclick="copyLink()">📋 Salin Link</button>
-    </div>
     <div class="action-pad">
       <button class="touch-btn btn-jump" id="btn-jump">▲</button>
     </div>
   </div>
 
   <script>
+    const settings = document.getElementById('settings');
+    const panel = document.getElementById('ui');
+    function showSettings(open) {
+      panel.hidden = !open;
+      settings.setAttribute('aria-expanded', String(open));
+    }
+    settings.onclick = () => showSettings(panel.hidden);
+    document.addEventListener('pointerdown', e => {
+      if (!panel.contains(e.target) && !settings.contains(e.target)) showSettings(false);
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && !panel.hidden) {
+        showSettings(false);
+        settings.focus();
+      }
+    });
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
 
@@ -225,9 +232,9 @@
     const peerConfig = {
       config: {
         iceServers: [
-          { urls: 'stun:stun.l.Anthropic.com:19302' },
-          { urls: 'stun:stun1.l.Anthropic.com:19302' },
-          { urls: 'stun:stun2.l.Anthropic.com:19302' },
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun2.l.google.com:19302' },
           { urls: 'stun:global.stun.twilio.com:3478' }
         ]
       }
@@ -256,8 +263,19 @@
     let tick = 0;
     let heartScore = 0;
 
+    const art = {};
+    for (const name of ['rimba', 'irma', 'ubay', 'motion']) {
+      art[name] = new Image();
+      art[name].src = 'assets/' + name + '.webp';
+    }
+    let practice = false;
+    document.getElementById('practice').onclick = () => {
+      practice = true;
+      gameState = 'playing';
+    };
+
     // Heart coins scattered along the jungle path
-    const heartCoins = [
+    const coinLayout = [
       { id: 1,  x: 320,  y: 360, collected: false },
       { id: 2,  x: 520,  y: 330, collected: false },
       { id: 3,  x: 700,  y: 340, collected: false },
@@ -282,7 +300,7 @@
     }));
 
     // Rich jungle platforms with foliage & vines
-    const platforms = [
+    const terrainLayout = [
       { x: 0,    y: 430, w: 480, h: 110, hasTree: true },
       { x: 560,  y: 410, w: 260, h: 130 },
       { x: 900,  y: 350, w: 220, h: 190, hasVines: true },
@@ -292,7 +310,50 @@
       { x: 2200, y: 300, w: 260, h: 240, hasTree: true },
       { x: 2550, y: 410, w: 550, h: 130 }
     ];
-    const GOAL_X = 2820;
+    const sectorWidth = 3160;
+    let sector = -1;
+    let platforms = [], heartCoins = [];
+    function loadSector(index) {
+      if (index === sector) return;
+      const oldCoins = new Map(heartCoins.map(c => [c.id, c.collected]));
+      sector = index;
+      platforms = [];
+      heartCoins = [];
+      for (let n = Math.max(0, index - 1); n <= index + 1; n++) {
+        const offset = n * sectorWidth;
+        terrainLayout.forEach((b, i) => {
+          const x = offset + b.x;
+          const spikes = (i + n) % 3 === 0 && b.w >= 240;
+          platforms.push({ ...b, x, spike: spikes ? x + Math.floor(b.w * .70) : null });
+        });
+        coinLayout.forEach(c => {
+          const id = n * coinLayout.length + c.id;
+          heartCoins.push({ ...c, x: offset + c.x, id, collected: oldCoins.get(id) || false });
+        });
+      }
+    }
+    loadSector(0);
+    let checkpoint = platforms[0];
+    function resetPair() {
+      [players.monkey, players.croc].forEach((p, i) => {
+        Object.assign(p, { x: checkpoint.x + 42 + i * 62,
+          y: checkpoint.y - p.h / 2, vx: 0, vy: 0, onGround: true });
+      });
+    }
+    function checkHazards() {
+      const pair = Object.values(players);
+      for (const b of platforms) {
+        if (b.spike !== null && pair.some(p =>
+          Math.abs(p.x - b.spike - 13) < p.w * .32 + 11 &&
+          p.y + p.h / 2 > b.y - 17 && p.y - p.h / 2 < b.y + 2)) {
+          resetPair();
+          return;
+        }
+        if (b.x > checkpoint.x && pair.every(p => p.x >= b.x + 22) &&
+            pair.some(p => p.onGround && p.x < b.x + b.w)) checkpoint = b;
+      }
+      if (pair.some(p => p.y > 610 || p.x < platforms[0].x - 80)) resetPair();
+    }
 
     function initPeer(customJoinId = null) {
       if (peer) {
@@ -300,6 +361,10 @@
       }
 
       document.getElementById('role-text').innerHTML = 'Status: <b>Menghubungkan ke server...</b>';
+      if (typeof Peer === 'undefined') {
+        document.getElementById('role-text').textContent = 'Offline · latihan tersedia';
+        return;
+      }
       peer = new Peer(peerConfig);
 
       peer.on('open', (id) => {
@@ -318,7 +383,6 @@
           document.getElementById('room-info').style.display = 'inline';
           document.getElementById('my-id').textContent = id;
           document.getElementById('copy-btn').style.display = 'inline';
-          document.getElementById('mobile-copy-btn').style.display = 'inline-block';
           document.getElementById('join-box').style.display = 'none';
         }
       });
@@ -333,7 +397,6 @@
           gameState = 'playing';
           conn.send({ type: 'init', role: 'monkey' });
           document.getElementById('role-text').innerHTML = '<span class="badge badge-p2">🐊 Host (Ubay) - Terhubung!</span>';
-          document.getElementById('mobile-copy-btn').style.display = 'none';
         });
       });
 
@@ -381,7 +444,6 @@
         document.getElementById('join-box').style.display = 'none';
         document.getElementById('room-info').style.display = 'none';
         document.getElementById('copy-btn').style.display = 'none';
-        document.getElementById('mobile-copy-btn').style.display = 'none';
       });
     }
 
@@ -415,6 +477,18 @@
     initPeer();
 
     function setupConnection() {
+      if (practice) {
+        for (const [p, x] of [[players.monkey, 140], [players.croc, 210]]) {
+          Object.assign(p, { x, y: 380, vx: 0, vy: 0, onGround: false });
+        }
+        for (const coin of heartCoins) coin.collected = false;
+        sector = -1;
+        loadSector(0);
+        checkpoint = platforms[0];
+        heartScore = 0;
+        gameState = 'waiting';
+        practice = false;
+      }
       conn.on('data', (data) => {
         if (data.type === 'init') {
           myRole = data.role;
@@ -423,7 +497,8 @@
           Object.assign(remoteKeys, data.keys);
         } else if (data.type === 'sync') {
           gameState = data.state || 'playing';
-          if (data.hearts) {
+          loadSector(data.sector ?? 0);
+          if (data.hearts !== undefined) {
             heartScore = data.hearts;
             if (data.collectedIds) {
               data.collectedIds.forEach(id => {
@@ -433,15 +508,8 @@
             }
           }
           if (!isHost) {
-            // Smooth client interpolation
-            players.monkey.x += (data.m.x - players.monkey.x) * 0.4;
-            players.monkey.y += (data.m.y - players.monkey.y) * 0.4;
-            players.monkey.vx = data.m.vx;
-            players.monkey.facing = data.m.f;
-            players.croc.x += (data.c.x - players.croc.x) * 0.4;
-            players.croc.y += (data.c.y - players.croc.y) * 0.4;
-            players.croc.vx = data.c.vx;
-            players.croc.facing = data.c.f;
+            players.monkey.target = data.m;
+            players.croc.target = data.c;
           }
         }
       });
@@ -457,6 +525,7 @@
 
     // Keyboard handlers
     window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
       if (e.code === 'KeyA' || e.code === 'ArrowLeft')  keys.left = true;
       if (e.code === 'KeyD' || e.code === 'ArrowRight') keys.right = true;
       if (e.code === 'KeyW' || e.code === 'ArrowUp' || e.code === 'Space') keys.up = true;
@@ -536,12 +605,7 @@
         }
       }
 
-      if (p.y > 620) {
-        p.x = 140;
-        p.y = 300;
-        p.vx = 0;
-        p.vy = 0;
-      }
+
     }
 
     function updateRope() {
@@ -585,27 +649,42 @@
     }
 
     function step() {
+      for (const p of Object.values(players)) {
+        p.prevX = p.x;
+        p.prevY = p.y;
+        if (!practice && !isHost && p.target) {
+          if (Math.hypot(p.target.x - p.x, p.target.y - p.y) > 150) {
+            p.x = p.target.x;
+            p.y = p.target.y;
+          }
+          p.vy = p.target.vy;
+          p.onGround = p.target.ground;
+          p.x += (p.target.x - p.x) * .38;
+          p.y += (p.target.y - p.y) * .38;
+          p.vx = p.target.vx;
+          p.facing = p.target.f;
+        }
+      }
       tick++;
 
-      if (isHost && gameState === 'playing') {
+      if ((practice || isHost) && gameState === 'playing') {
         applyInput(players.croc, keys);
-        applyInput(players.monkey, remoteKeys);
+        applyInput(players.monkey, practice ? keys : remoteKeys);
         
         updatePhysics(players.monkey);
         updatePhysics(players.croc);
         updateRope();
         checkCoins();
 
-        if (players.monkey.x >= GOAL_X && players.croc.x >= GOAL_X) {
-          gameState = 'win';
-        }
+        checkHazards();
+        loadSector(Math.max(0, Math.floor((players.monkey.x + players.croc.x) / (2 * sectorWidth))));
 
-        if (conn && conn.open) {
+        if (conn && conn.open && tick % 3 === 0) {
           conn.send({
             type: 'sync',
-            m: { x: players.monkey.x, y: players.monkey.y, vx: players.monkey.vx, f: players.monkey.facing },
-            c: { x: players.croc.x, y: players.croc.y, vx: players.croc.vx, f: players.croc.facing },
-            hearts: heartScore,
+            m: { x: players.monkey.x, y: players.monkey.y, vx: players.monkey.vx, vy: players.monkey.vy, ground: players.monkey.onGround, f: players.monkey.facing },
+            c: { x: players.croc.x, y: players.croc.y, vx: players.croc.vx, vy: players.croc.vy, ground: players.croc.onGround, f: players.croc.facing },
+            sector, hearts: heartScore,
             collectedIds: heartCoins.filter(c => c.collected).map(c => c.id),
             state: gameState
           });
@@ -616,20 +695,44 @@
         }
       }
 
-      // Dynamic responsive scale so gameplay stays consistent across portrait/landscape
-      const baseHeight = 540;
-      const scale = canvas.height / baseHeight;
-      const midX = (players.monkey.x + players.croc.x) / 2;
-      const targetCamX = midX - (canvas.width / 2) / scale;
-      cameraX += (targetCamX - cameraX) * 0.08;
-      cameraX = Math.max(0, cameraX);
+    }
 
-      render(scale);
-      requestAnimationFrame(step);
+    const frameMS = 1000 / 60;
+    let previousTime;
+    let remainder = 0;
+    let renderTick = 0;
+    function frame(now) {
+      const elapsed = Math.min(now - (previousTime ?? now), 100);
+      previousTime = now;
+      remainder += elapsed;
+      while (remainder >= frameMS) {
+        step();
+        remainder -= frameMS;
+      }
+      const alpha = remainder / frameMS;
+      renderTick = tick + alpha;
+      function pose(p) {
+        const x = p.prevX ?? p.x, y = p.prevY ?? p.y;
+        if (Math.hypot(p.x - x, p.y - y) > 75) return p;
+        return { ...p, x: x + (p.x - x) * alpha, y: y + (p.y - y) * alpha };
+      }
+      const monkey = pose(players.monkey), croc = pose(players.croc);
+      const scale = canvas.height / 540;
+      const target = Math.max(0, (monkey.x + croc.x) / 2 - canvas.width / (2 * scale));
+      cameraX += (target - cameraX) * (1 - Math.exp(-elapsed / 175));
+      render(scale, monkey, croc);
+      requestAnimationFrame(frame);
     }
 
     // --- ART & RENDERING ---
     function drawBackground(scale) {
+      if (art.rimba.naturalWidth) {
+        const img = art.rimba;
+        const zoom = Math.max(canvas.width / img.width, canvas.height / img.height) * 1.12;
+        const overflow = img.width * zoom - canvas.width;
+        ctx.drawImage(img, -overflow * (.45 + .18 * Math.sin(cameraX / 1600)), (canvas.height - img.height * zoom) / 2, img.width * zoom, img.height * zoom);
+        return;
+      }
       // Atmospheric sky gradient
       const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
       skyGrad.addColorStop(0, '#04160c');
@@ -678,9 +781,7 @@
       ctx.restore();
     }
 
-    function drawRope() {
-      const p1 = players.monkey;
-      const p2 = players.croc;
+    function drawRope(p1, p2) {
       const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
       const sag = Math.max(0, (ROPE_REST_LEN - dist) * 0.4 + 14);
       const midX = (p1.x + p2.x) / 2;
@@ -885,7 +986,7 @@
       ctx.fill();
 
       // Main Crocodile Body
-      ctx.fillStyle = '#40916c';
+      ctx.fillStyle = '#62812d';
       ctx.beginPath();
       ctx.roundRect(-26, -10, 52, 22, 10);
       ctx.fill();
@@ -944,18 +1045,37 @@
 
       // Badge Indicator
       ctx.scale(p.facing, 1);
-      ctx.fillStyle = '#74c69d';
+      ctx.fillStyle = '#d7e254';
       ctx.font = 'bold 11px system-ui';
       ctx.textAlign = 'center';
       ctx.fillText('🐊 Ubay', 0, -28);
       ctx.restore();
     }
 
+    function drawHero(p, img, fallback) {
+      if (!img.naturalWidth) return fallback(p);
+      ctx.save();
+      ctx.translate(p.x, p.y + p.h / 2);
+      ctx.scale(p.facing, 1);
+      if (art.motion.naturalWidth) {
+        const running = Math.abs(p.vx) > .25;
+        const airborne = gameState === 'playing' && !p.onGround;
+        const phase = airborne ? (p.vy < 0 ? 4 : 5)
+          : running ? ((Math.floor(p.x / 8) % 4 + 4) % 4) : 1;
+        const row = img === art.irma ? 0 : 1;
+        const bob = airborne || running ? 0 : Math.sin(renderTick * .055) * .7;
+        ctx.drawImage(art.motion, phase * 192, row * 192, 192, 192, -34, -68 + bob, 68, 68 - bob);
+      } else {
+        ctx.drawImage(img, -32, -63, 64, 63);
+      }
+      ctx.restore();
+    }
+
     function drawPlatform(b) {
       // Grass top foliage with lush gradient
       const grassGrad = ctx.createLinearGradient(0, b.y, 0, b.y + 14);
-      grassGrad.addColorStop(0, '#74c69d');
-      grassGrad.addColorStop(1, '#40916c');
+      grassGrad.addColorStop(0, '#d7e254');
+      grassGrad.addColorStop(1, '#62812d');
       ctx.fillStyle = grassGrad;
       ctx.beginPath();
       ctx.roundRect(b.x, b.y, b.w, 14, [10, 10, 0, 0]);
@@ -963,11 +1083,26 @@
 
       // Rich Earth body with layered bedrock
       const dirtGrad = ctx.createLinearGradient(0, b.y + 14, 0, b.y + b.h);
-      dirtGrad.addColorStop(0, '#2d6a4f');
-      dirtGrad.addColorStop(1, '#081c15');
+      dirtGrad.addColorStop(0, '#72563a');
+      dirtGrad.addColorStop(1, '#2c3228');
       ctx.fillStyle = dirtGrad;
       ctx.fillRect(b.x, b.y + 14, b.w, b.h - 14);
 
+      for (let x = 0; x < b.w - 18; x += 23) {
+        const drop = 8 + 9 * Math.abs(Math.sin(x + b.x));
+        ctx.fillStyle = '#647e2e';
+        ctx.beginPath();
+        ctx.moveTo(b.x+x,b.y+10);
+        ctx.lineTo(b.x+x+8,b.y+drop+7);
+        ctx.lineTo(b.x+x+17,b.y+10);
+        ctx.fill();
+        ctx.strokeStyle = '#413b2d';
+        ctx.beginPath();
+        ctx.moveTo(b.x+x+15,b.y+20);
+        ctx.lineTo(b.x+x+7,b.y+drop+25);
+        ctx.lineTo(b.x+x+14,b.y+drop+42);
+        ctx.stroke();
+      }
       // Hanging foliage vines under platform
       if (b.hasVines) {
         ctx.strokeStyle = '#52b788';
@@ -996,40 +1131,36 @@
       }
     }
 
-    function render(scale) {
+    function render(scale, monkey, croc) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       drawBackground(scale);
 
       ctx.save();
       ctx.scale(scale, scale);
-      ctx.translate(-Math.round(cameraX), 0);
+      ctx.translate(-cameraX, 0);
 
       // Platforms
       for (const b of platforms) {
-        drawPlatform(b);
+        if (b.x + b.w >= cameraX && b.x <= cameraX + canvas.width / scale) drawPlatform(b);
       }
 
-      // Golden Finish Shrine with animated flag
-      ctx.fillStyle = '#ffb703';
-      ctx.fillRect(GOAL_X, 280, 8, 140);
-      const flagWave = Math.sin(tick * 0.1) * 5;
-      ctx.beginPath();
-      ctx.moveTo(GOAL_X + 8, 280);
-      ctx.quadraticCurveTo(GOAL_X + 32, 290 + flagWave, GOAL_X + 54, 305);
-      ctx.quadraticCurveTo(GOAL_X + 32, 320 + flagWave, GOAL_X + 8, 330);
-      ctx.fillStyle = '#e63946';
-      ctx.fill();
-
-      // Goal glow
-      ctx.fillStyle = 'rgba(255, 183, 3, 0.2)';
-      ctx.beginPath();
-      ctx.arc(GOAL_X + 4, 350, 48, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 14px system-ui';
-      ctx.fillText('FINISH 🏁', GOAL_X - 16, 260);
+      for (const b of platforms) {
+        if (b.spike === null || b.spike < cameraX - 32 || b.spike > cameraX + canvas.width / scale) continue;
+        for (let i = 0; i < 2; i++) {
+          const x = b.spike + i * 13;
+          ctx.fillStyle = '#c3cdba';
+          ctx.strokeStyle = '#292f29';
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.moveTo(x, b.y);
+          ctx.lineTo(x + 8, b.y - 22 + i * 4);
+          ctx.lineTo(x + 14, b.y);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+      }
 
       // Draw Heart Coins
       for (const coin of heartCoins) {
@@ -1039,9 +1170,9 @@
       }
 
       // Dynamic Rope & Alive Characters
-      drawRope();
-      drawMonkey(players.monkey);
-      drawCroc(players.croc);
+      drawRope(monkey, croc);
+      drawHero(monkey, art.irma, drawMonkey);
+      drawHero(croc, art.ubay, drawCroc);
 
       ctx.restore();
 
@@ -1061,34 +1192,15 @@
       ctx.fillText('💖', 24, 83);
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 15px system-ui';
-      ctx.fillText(heartScore + ' / ' + heartCoins.length, 52, 83);
+      ctx.fillText(String(heartScore), 52, 83);
       ctx.restore();
 
       // Overlays
-      if (gameState === 'waiting') {
-        ctx.fillStyle = 'rgba(4, 18, 10, 0.75)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 24px system-ui';
-        ctx.textAlign = 'center';
-        ctx.fillText('🌴 Tali Rimba: Irma & Ubay 🌴', canvas.width / 2, canvas.height / 2 - 25);
-        ctx.font = '15px system-ui';
-        ctx.fillStyle = '#95d5b2';
-        ctx.fillText('Salin link & kirim ke teman untuk main berdua!', canvas.width / 2, canvas.height / 2 + 15);
-      } else if (gameState === 'win') {
-        ctx.fillStyle = 'rgba(6, 28, 15, 0.9)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ffb703';
-        ctx.font = 'bold 36px system-ui';
-        ctx.textAlign = 'center';
-        ctx.fillText('🏆 MENANG BERDUA! 🏆', canvas.width / 2, canvas.height / 2 - 15);
-        ctx.font = '16px system-ui';
-        ctx.fillStyle = '#e2f8e7';
-        ctx.fillText('Kerjasama Irma & Ubay sukses menembus rimba!', canvas.width / 2, canvas.height / 2 + 25);
-      }
+      document.getElementById('camp').hidden = gameState !== 'waiting';
+
     }
 
-    requestAnimationFrame(step);
+    requestAnimationFrame(frame);
   </script>
 </body>
 </html>
